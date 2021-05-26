@@ -117,7 +117,8 @@ widget_defaults = dict(
     font="Ubuntu Mono",
     fontsize = 12,
     padding = 2,
-    background=colors[2]
+    background=colors[2],
+    foreground=colors[0],
 )
 extension_defaults = widget_defaults.copy()
 
@@ -125,16 +126,85 @@ screens = [
     Screen(
         top=bar.Bar(
             [
-                widget.CurrentLayout(),
+                widget.CurrentLayoutIcon(
+                    background = colors[0],
+                    foreground = colors[2],
+                    padding = 2,
+                ),
+                widget.CurrentLayout(
+                    background = colors[0],
+                    foreground = colors[2],
+                    padding = 2,
+                ),
                 widget.GroupBox(),
                 widget.Prompt(),
                 widget.WindowName(),
-                widget.Systray(),
+                widget.Net(
+                    background = colors[0],
+                    foreground = colors[2],
+                    padding = 2,
+                    interface = "enp39s0",
+                ),
+                widget.CheckUpdates(
+                    background = colors[0],
+                    foreground = colors[2],
+                    padding = 2,
+                    colour_have_updates = colors[3],
+                    display_format = 'Updates: {updates}',
+                    no_update_string = 'No Updates',
+                    restart_indicator = 'Restart Required',
+                    distro = 'Arch',
+                    update_interval = 60,
+                ),
                 widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
+                widget.KeyboardLayout(
+                    background = colors[0],
+                    foreground = colors[2],
+                    padding = 2,
+                    configured_keyboards = ['us', 'ir'],
+                ),
+                widget.Systray(),
+                widget.Sep(
+                    background = colors[0],
+                    foreground = colors[2],
+                    padding = 2,
+                ),
             ],
-            # opacity = 1.0,
+            opacity = 1.0,
             size = 24,
         ),
+        bottom=bar.Bar(
+            [
+                widget.CapsNumLockIndicator(
+                    background = colors[0],
+                    foreground = colors[2],
+                    padding = 2,
+                    update_interval = 1.0,
+                ),
+                widget.Spacer(
+                    background = colors[2],
+                ),
+                widget.Memory(
+                    background = colors[0],
+                    foreground = colors[2],
+                    padding = 2,
+                    mouse_callbacks = {terminal + "-e free -h"},
+                ),
+                widget.CPU(
+                    background = colors[0],
+                    foreground = colors[2],
+                    mouse_callbacks = {terminal + "-e top"},
+                    padding = 2,
+                    update_interval = 1.0,
+                ),
+                widget.Clipboard(
+                    background = colors[0],
+                    foreground = colors[2],
+                    padding = 2,
+                ),
+            ],
+            size=24,
+        )
         # bottom=bar.Bar(
         #     [
         #         widget.CurrentLayout(),
