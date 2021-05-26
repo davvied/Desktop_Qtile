@@ -32,24 +32,11 @@ keys = [
         desc="Move window down"),
     Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Move window up"),
 
-    # Grow windows. If current window is on the edge of screen and direction
-    # will be to screen edge - window would shrink.
-    Key([mod, "control"], "h", lazy.layout.grow_left(),
-        desc="Grow window to the left"),
-    Key([mod, "control"], "l", lazy.layout.grow_right(),
-        desc="Grow window to the right"),
-    Key([mod, "control"], "j", lazy.layout.grow_down(),
-        desc="Grow window down"),
-    Key([mod, "control"], "k", lazy.layout.grow_up(), desc="Grow window up"),
-    Key([mod], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
-
-    # Toggle between split and unsplit sides of stack.
-    # Split = all windows displayed
-    # Unsplit = 1 window displayed, like Max layout, but still with
-    # multiple stack panes
-    Key([mod, "shift"], "Return", lazy.layout.toggle_split(),
-        desc="Toggle between split and unsplit sides of stack"),
-    Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
+    Key([mod, "control"], "j", lazy.layout.shrink()),
+    Key([mod, "control"], "k", lazy.layout.grow()),
+    Key([mod, "control"], "n", lazy.layout.normalize()),
+    Key([mod, "control"], "m", lazy.layout.maximize()),
+    Key([mod, "control"], "space", lazy.layout.flip()),
 
     # Toggle between different layouts as defined below
     Key([mod], "space", lazy.next_layout(), desc="Toggle between layouts"),
@@ -82,13 +69,13 @@ for i in groups:
 
 layout_theme = {"border_width": 2,
                 "margin": 8,
-                "border_focus": "e1acff",
-                "border_normal": "1D2330"
+                "border_focus": "#e3eaee",
+                "border_normal": "#30586f",
                 }
 
 layouts = [
     # layout.Columns(border_focus_stack='#d75f5f'),
-    layout.MonadTall(),
+    layout.MonadTall(**layout_theme),
     layout.Max(),
     # Try more layouts by unleashing below layouts.
     # layout.Stack(num_stacks=2),
@@ -322,16 +309,13 @@ screens = [
                     background = colors[2],
                     foreground = colors[0],
                     padding = 4,
-                    border = colors[2],
+                    border = colors[4],
                     highlight_method = colors[3],
                     icon_size = 14,
                     rounded = True,
                     urgent_alert_method = 'text',   # text or border
                     urgent_border = colors[4],
                     ),
-                # widget.Spacer(
-                #     background = colors[2],
-                # ),
                 widget.TextBox(
                     text = '',
                     background = colors[2],
@@ -367,34 +351,13 @@ screens = [
                     fontsize = 24,
                     ),
                 widget.Clipboard(
-                    background = colors[0],
-                    foreground = colors[2],
+                    background = colors[2],
+                    foreground = colors[0],
                     padding = 2,
                 ),
             ],
             size=24,
         )
-        # bottom=bar.Bar(
-        #     [
-        #         widget.CurrentLayout(),
-        #         widget.GroupBox(),
-        #         widget.Prompt(),
-        #         widget.WindowName(),
-        #         widget.Chord(
-        #             chords_colors={
-        #                 'launch': ("#ff0000", "#ffffff"),
-        #             },
-        #             name_transform=lambda name: name.upper(),
-        #         ),
-        #         widget.TextBox("default config", name="default"),
-        #         widget.TextBox("Press &lt;M-r&gt; to spawn", foreground="#d75f5f"),
-        #         widget.Systray(),
-        #         widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
-        #         widget.QuickExit(),
-        #     ],
-        #     24,
-        # )
-        # ,
     ),
 ]
 
@@ -419,6 +382,9 @@ floating_layout = layout.Floating(float_rules=[
     Match(wm_class='confirmreset'),  # gitk
     Match(wm_class='makebranch'),  # gitk
     Match(wm_class='maketag'),  # gitk
+    Match(wm_class='xfce4-appfinder'),  # xfce4-appfinder
+    Match(wm_class='Steam'),  # Steam
+    Match(wm_class='steam-app-*'),  # Steam
     Match(wm_class='ssh-askpass'),  # ssh-askpass
     Match(title='branchdialog'),  # gitk
     Match(title='pinentry'),  # GPG key password entry
