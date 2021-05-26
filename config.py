@@ -2,6 +2,7 @@ import  os
 import  re
 import socket
 import subprocess
+import psutil
 from typing import List  # noqa: F401
 
 from libqtile import qtile, bar, layout, widget, hook
@@ -18,7 +19,7 @@ keys = [
     Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
     Key([mod], "j", lazy.layout.down(), desc="Move focus down"),
     Key([mod], "k", lazy.layout.up(), desc="Move focus up"),
-    Key([mod], "space", lazy.layout.next(),
+    Key([mod], "Tab", lazy.layout.next(),
         desc="Move window focus to other window"),
 
     # Move windows between left/right columns or move up/down in current stack.
@@ -51,8 +52,8 @@ keys = [
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
 
     # Toggle between different layouts as defined below
-    Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
-    Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
+    Key([mod], "space", lazy.next_layout(), desc="Toggle between layouts"),
+    Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
 
     Key([mod, "control"], "r", lazy.restart(), desc="Restart Qtile"),
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
@@ -103,14 +104,12 @@ layouts = [
 ]
 
 
-colors = [["#282c34", "#282c34"], # panel background
-          ["#3d3f4b", "#434758"], # background for current screen tab
-          ["#ffffff", "#ffffff"], # font color for group names
-          ["#ff5555", "#ff5555"], # border line color for current tab
-          ["#74438f", "#74438f"], # border line color for 'other tabs' and color for 'odd widgets'
-          ["#4f76c7", "#4f76c7"], # color for the 'even widgets'
-          ["#e1acff", "#e1acff"], # window name
-          ["#ecbbfb", "#ecbbfb"]] # backbround for inactive screens
+colors = [["#e3eaee", "#e3eaee"], # 0 panel background                        ->  Gray
+          ["#9ab2c0", "#9ab2c0"], # 1 background for current screen tab
+          ["#30586f", "#30586f"], # 2 font color for group names
+          ["#ff2800", "#ff2800"], # 3 border line color for current tab
+          ["#3c6e8a", "#3c6e8a"], # 4 border line color for 'other tabs' and color for 'odd widgets'
+          ["#4f76c7", "#4f76c7"]] # 5 window name
 
 ##### DEFAULT WIDGET SETTINGS #####
 widget_defaults = dict(
@@ -126,47 +125,158 @@ screens = [
     Screen(
         top=bar.Bar(
             [
-                widget.CurrentLayoutIcon(
-                    background = colors[0],
+                widget.Sep(
+                    linewidth = 0,
+                    background = colors[2],
                     foreground = colors[2],
+                    padding = 2,
+                ),
+                widget.CurrentLayoutIcon(
+                    background = colors[2],
+                    foreground = colors[0],
                     padding = 2,
                 ),
                 widget.CurrentLayout(
+                    background = colors[2],
+                    foreground = colors[0],
+                    padding = 2,
+                ),
+                widget.TextBox(
+                    text = '',
+                    background = colors[0],
+                    foreground = colors[2],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
+                widget.GroupBox(
+                    background = colors[0],
+                    foreground = colors[2],
+                    padding = 2,
+                    margin_y = 3,
+                    margin_x = 3,
+                    padding_y = 5,
+                    padding_x = 3,
+                    borderwith = 3,
+                    active = colors[3],
+                    inactive = colors[4],
+                    block_highlight_text_color = colors[2],
+                    center_aligned = True,
+                    disable_drag = True,
+                    hide_unused = True,
+                    rounded = True,
+                    highlight_method = "line",
+                    highlight_color = colors[0],
+                    this_current_screen_border = colors[5],
+                    this_current_border = colors[4],
+                    other_current_screen_border = colors[5],
+                    other_current_border = colors[4],
+                ),
+                widget.TextBox(
+                    text = '',
+                    background = colors[2],
+                    foreground = colors[0],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
+                widget.Prompt(
+                    background = colors[2],
+                    foreground = colors[0],
+                    padding = 0,
+                    ),
+                widget.TextBox(
+                    text = '',
+                    background = colors[0],
+                    foreground = colors[2],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
+                widget.WindowName(
                     background = colors[0],
                     foreground = colors[2],
                     padding = 2,
                 ),
-                widget.GroupBox(),
-                widget.Prompt(),
-                widget.WindowName(),
-                widget.Net(
+                widget.TextBox(
+                    text = '',
                     background = colors[0],
                     foreground = colors[2],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
+                widget.Net(
+                    background = colors[2],
+                    foreground = colors[0],
                     padding = 2,
                     interface = "enp39s0",
                 ),
+                widget.TextBox(
+                    text = '',
+                    background = colors[2],
+                    foreground = colors[0],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
                 widget.CheckUpdates(
                     background = colors[0],
                     foreground = colors[2],
-                    padding = 2,
+                    padding = 4,
+                    custom_command = 'paru -Sy',
+                    execute = 'paru -Syu',
                     colour_have_updates = colors[3],
+                    colour_no_updates = colors[2],
                     display_format = 'Updates: {updates}',
                     no_update_string = 'No Updates',
                     restart_indicator = 'Restart Required',
                     distro = 'Arch',
-                    update_interval = 60,
+                    update_interval = 3600,
                 ),
-                widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
+                widget.TextBox(
+                    text = '',
+                    background = colors[0],
+                    foreground = colors[2],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
+                widget.Volume(
+                    background = colors[2],
+                    foreground = colors[0],
+                    padding = 4,
+                ),
+                widget.TextBox(
+                    text = '',
+                    background = colors[2],
+                    foreground = colors[0],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
                 widget.KeyboardLayout(
                     background = colors[0],
                     foreground = colors[2],
-                    padding = 2,
+                    padding = 4,
                     configured_keyboards = ['us', 'ir'],
                 ),
-                widget.Systray(),
-                widget.Sep(
+                widget.TextBox(
+                    text = '',
                     background = colors[0],
                     foreground = colors[2],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
+                widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
+                widget.TextBox(
+                    text = '',
+                    background = colors[2],
+                    foreground = colors[0],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
+                widget.Systray(
+                    background = colors[0],
+                    padding = 2,
+                    icon_size = 14,
+                    ),
+                widget.Sep(
+                    background = colors[0],
+                    foreground = colors[0],
                     padding = 2,
                 ),
             ],
@@ -175,28 +285,87 @@ screens = [
         ),
         bottom=bar.Bar(
             [
+                widget.Sep(
+                    background = colors[2],
+                    foreground = colors[2],
+                    padding = 2,
+                ),
+                widget.Wallpaper(
+                    background = colors[2],
+                    foreground = colors[0],
+                    padding = 4,
+                    label = 'Wallpaper',
+                    directory = '~/Pictures/gnome',
+                    random_selection = True,
+                ),
+                widget.TextBox(
+                    text = '',
+                    background = colors[0],
+                    foreground = colors[2],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
                 widget.CapsNumLockIndicator(
                     background = colors[0],
                     foreground = colors[2],
                     padding = 2,
                     update_interval = 1.0,
                 ),
-                widget.Spacer(
+                widget.TextBox(
+                    text = '',
                     background = colors[2],
-                ),
+                    foreground = colors[0],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
+                widget.TaskList(
+                    background = colors[2],
+                    foreground = colors[0],
+                    padding = 4,
+                    border = colors[2],
+                    highlight_method = colors[3],
+                    icon_size = 14,
+                    rounded = True,
+                    urgent_alert_method = 'text',   # text or border
+                    urgent_border = colors[4],
+                    ),
+                # widget.Spacer(
+                #     background = colors[2],
+                # ),
+                widget.TextBox(
+                    text = '',
+                    background = colors[2],
+                    foreground = colors[0],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
                 widget.Memory(
                     background = colors[0],
                     foreground = colors[2],
-                    padding = 2,
+                    padding = 4,
                     mouse_callbacks = {terminal + "-e free -h"},
                 ),
-                widget.CPU(
+                widget.TextBox(
+                    text = '',
                     background = colors[0],
                     foreground = colors[2],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
+                widget.CPU(
+                    background = colors[2],
+                    foreground = colors[0],
                     mouse_callbacks = {terminal + "-e top"},
-                    padding = 2,
+                    padding = 4,
                     update_interval = 1.0,
                 ),
+                widget.TextBox(
+                    text = '',
+                    background = colors[2],
+                    foreground = colors[0],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
                 widget.Clipboard(
                     background = colors[0],
                     foreground = colors[2],
