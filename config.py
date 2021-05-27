@@ -46,6 +46,12 @@ keys = [
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
     Key([mod], "r", lazy.spawncmd(),
         desc="Spawn a command using a prompt widget"),
+    # Media keys
+    Key([], "XF86AudioRaiseVolume", lazy.spawn("amixer set Master 2%+ -q"), desc="Rise Volume"),
+    Key([], "XF86AudioLowerVolume", lazy.spawn("amixer set Master 2%- -q"), desc="Lower Volume"),
+    Key([], "XF86AudioMute", lazy.spawn("amixer set Master toggle -q"), desc="Lower Volume"),
+
+    Key(["control", "shift"], "Escape", lazy.spawn("gnome-system-monitor")),
 ]
 
 prompt = "{0}@{1}: ".format(os.environ["USER"], socket.gethostname())
@@ -206,8 +212,8 @@ screens = [
                     background = colors[0],
                     foreground = colors[2],
                     padding = 4,
-                    custom_command = 'paru -Sy',
-                    execute = 'paru -Syu',
+                    # custom_command = 'paru -Sy',
+                    # execute = 'paru -Syu',
                     colour_have_updates = colors[3],
                     colour_no_updates = colors[2],
                     display_format = 'Updates: {updates}',
@@ -248,7 +254,26 @@ screens = [
                     padding = 0,
                     fontsize = 24,
                     ),
-                widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
+                widget.KhalCalendar(
+                    background = colors[2],
+                    foreground = colors[0],
+                    reminder_color = colors[3],
+                    remindertime = 10,
+                    padding = 4,
+                    mouse_callbacks = {terminal + "-e khal interactive"}
+                ),
+                widget.TextBox(
+                    text = '',
+                    background = colors[2],
+                    foreground = colors[0],
+                    padding = 0,
+                    fontsize = 24,
+                    ),
+                widget.Clock(format='%Y-%m-%d %a %I:%M %p',
+                    background = colors[2],
+                    foreground = colors[0],
+                    padding = 4,
+                ),
                 widget.TextBox(
                     text = '',
                     background = colors[2],
@@ -295,7 +320,7 @@ screens = [
                 widget.CapsNumLockIndicator(
                     background = colors[0],
                     foreground = colors[2],
-                    padding = 2,
+                    padding = 4,
                     update_interval = 1.0,
                 ),
                 widget.TextBox(
@@ -384,8 +409,8 @@ floating_layout = layout.Floating(float_rules=[
     Match(wm_class='maketag'),  # gitk
     Match(wm_class='xfce4-appfinder'),  # xfce4-appfinder
     Match(wm_class='Steam'),  # Steam
-    Match(wm_class='steam-app-*'),  # Steam
     Match(wm_class='ssh-askpass'),  # ssh-askpass
+    Match(wm_class='pinentry-gtk-2'),  # Steam
     Match(title='branchdialog'),  # gitk
     Match(title='pinentry'),  # GPG key password entry
 ])
