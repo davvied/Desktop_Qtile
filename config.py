@@ -198,7 +198,7 @@ screens = [
                 widget.Net(
                     background = colors[2],
                     foreground = colors[0],
-                    padding = 2,
+                    padding = 4,
                     interface = "enp39s0",
                 ),
                 widget.TextBox(
