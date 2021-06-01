@@ -10,4 +10,4 @@ picom &
 nm-applet &
 numlockx &
 nvidia-settings --config ~/.nvidia-settings-rc -l &
-variety &
+# variety &

@@ -24,12 +24,9 @@ keys = [
 
     # Move windows between left/right columns or move up/down in current stack.
     # Moving out of range in Columns layout will create new column.
-    Key([mod, "shift"], "h", lazy.layout.shuffle_left(),
-        desc="Move window to the left"),
-    Key([mod, "shift"], "l", lazy.layout.shuffle_right(),
-        desc="Move window to the right"),
-    Key([mod, "shift"], "j", lazy.layout.shuffle_down(),
-        desc="Move window down"),
+    Key([mod, "shift"], "h", lazy.layout.shuffle_left(), desc="Move window to the left"),
+    Key([mod, "shift"], "l", lazy.layout.shuffle_right(), desc="Move window to the right"),
+    Key([mod, "shift"], "j", lazy.layout.shuffle_down(), desc="Move window down"),
     Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Move window up"),
 
     Key([mod, "control"], "j", lazy.layout.shrink()),
@@ -38,9 +35,19 @@ keys = [
     Key([mod, "control"], "m", lazy.layout.maximize()),
     Key([mod, "control"], "space", lazy.layout.flip()),
 
+    ### Switch focus to specific monitor (out of three)
+    # Key([mod], ",", lazy.to_screen(0), desc='Keyboard focus to monitor 1'),
+    # Key([mod], ".", lazy.to_screen(1), desc='Keyboard focus to monitor 2'),
+    # Key([mod], "r", lazy.to_screen(2), desc='Keyboard focus to monitor 3'),
+
+    ### Switch focus of monitors
+    Key([mod], "period", lazy.next_screen(), desc='Move focus to next monitor'),
+    Key([mod], "comma", lazy.prev_screen(), desc='Move focus to prev monitor'),
+
     # Toggle between different layouts as defined below
     Key([mod], "space", lazy.next_layout(), desc="Toggle between layouts"),
     Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
+    Key([mod], "c", lazy.window.kill(), desc="Kill focused window"),
 
     Key([mod, "control"], "r", lazy.restart(), desc="Restart Qtile"),
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
@@ -97,12 +104,12 @@ layouts = [
 ]
 
 
-colors = [["#e3eaee", "#e3eaee"], # 0 panel background                        ->  Gray
-          ["#9ab2c0", "#9ab2c0"], # 1 background for current screen tab
-          ["#30586f", "#30586f"], # 2 font color for group names
-          ["#ff2800", "#ff2800"], # 3 border line color for current tab
-          ["#3c6e8a", "#3c6e8a"], # 4 border line color for 'other tabs' and color for 'odd widgets'
-          ["#4f76c7", "#4f76c7"]] # 5 window name
+colors = [["#e3eaee", "#e3eaee"], # 0 panel background                        ->  white-gray
+          ["#9ab2c0", "#9ab2c0"], # 1 background for current screen tab       ->  Gray-white
+          ["#30586f", "#30586f"], # 2 font color for group names              ->  Dark-Blue
+          ["#ff2800", "#ff2800"], # 3 border line color for current tab       ->  Orange
+          ["#3c6e8a", "#3c6e8a"], # 4 border line color for 'other tabs' and color for 'odd widgets'        ->  Dark-Blue
+          ["#4f76c7", "#4f76c7"]] # 5 window name                             ->  Light-Purple
 
 ##### DEFAULT WIDGET SETTINGS #####
 widget_defaults = dict(
@@ -212,15 +219,14 @@ screens = [
                     background = colors[0],
                     foreground = colors[2],
                     padding = 4,
-                    # custom_command = 'paru -Sy',
-                    # execute = 'paru -Syu',
                     colour_have_updates = colors[3],
                     colour_no_updates = colors[2],
                     display_format = 'Updates: {updates}',
                     no_update_string = 'No Updates',
                     restart_indicator = 'Restart Required',
                     distro = 'Arch',
-                    update_interval = 3600,
+                    update_interval = 1800,
+                    mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(terminal + ' -e paru -Syu')},
                 ),
                 widget.TextBox(
                     text = '',
@@ -260,7 +266,7 @@ screens = [
                     reminder_color = colors[3],
                     remindertime = 10,
                     padding = 4,
-                    mouse_callbacks = {terminal + "-e khal interactive"}
+                    mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(terminal + "-e khal interactive")}
                 ),
                 widget.TextBox(
                     text = '',
@@ -352,7 +358,7 @@ screens = [
                     background = colors[0],
                     foreground = colors[2],
                     padding = 4,
-                    mouse_callbacks = {terminal + "-e free -h"},
+                    mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn("gnome-system-monitor")},# (terminal + ' -e top')},
                 ),
                 widget.TextBox(
                     text = '',
@@ -364,7 +370,7 @@ screens = [
                 widget.CPU(
                     background = colors[2],
                     foreground = colors[0],
-                    mouse_callbacks = {terminal + "-e top"},
+                    mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(terminal + ' -e top')},
                     padding = 4,
                     update_interval = 1.0,
                 ),
@@ -384,7 +390,49 @@ screens = [
             size=24,
         )
     ),
+    Screen(top=bar.Bar(
+        [
+            widget.CPU(
+                background = colors[2],
+                foreground = colors[0],
+                mouse_callbacks = {terminal + "-e top"},
+                padding = 4,
+                update_interval = 1.0,
+            ),
+
+        ],
+        size = 24,
+        ),
+        ),
 ]
+
+# Extra functions from DT's config
+def window_to_prev_group(qtile):
+    if qtile.currentWindow is not None:
+        i = qtile.groups.index(qtile.currentGroup)
+        qtile.currentWindow.togroup(qtile.groups[i - 1].name)
+
+def window_to_next_group(qtile):
+    if qtile.currentWindow is not None:
+        i = qtile.groups.index(qtile.currentGroup)
+        qtile.currentWindow.togroup(qtile.groups[i + 1].name)
+
+def window_to_previous_screen(qtile):
+    i = qtile.screens.index(qtile.current_screen)
+    if i != 0:
+        group = qtile.screens[i - 1].group.name
+        qtile.current_window.togroup(group)
+
+def window_to_next_screen(qtile):
+    i = qtile.screens.index(qtile.current_screen)
+    if i + 1 != len(qtile.screens):
+        group = qtile.screens[i + 1].group.name
+        qtile.current_window.togroup(group)
+
+def switch_screens(qtile):
+    i = qtile.screens.index(qtile.current_screen)
+    group = qtile.screens[i - 1].group
+    qtile.current_screen.set_group(group)
 
 # Drag floating layouts.
 mouse = [
