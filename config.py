@@ -1,4 +1,4 @@
-import  os
+import  os, json
 import  re
 import socket
 import subprocess
@@ -36,8 +36,8 @@ keys = [
     Key([mod, "control"], "space", lazy.layout.flip()),
 
     ### Switch focus to specific monitor (out of three)
-    # Key([mod], ",", lazy.to_screen(0), desc='Keyboard focus to monitor 1'),
-    # Key([mod], ".", lazy.to_screen(1), desc='Keyboard focus to monitor 2'),
+    Key([mod], "period", lazy.to_screen(0), desc='Keyboard focus to monitor 1'),
+    Key([mod], "comma", lazy.to_screen(1), desc='Keyboard focus to monitor 2'),
     # Key([mod], "r", lazy.to_screen(2), desc='Keyboard focus to monitor 3'),
 
     ### Switch focus of monitors
@@ -103,23 +103,34 @@ layouts = [
     layout.Floating(**layout_theme)
 ]
 
+def pywal_colors(name):
+    home = os.path.expanduser('~')
+    try:
+        os.chdir(home + "/.cache/wal/")
+        colors_list = json.load(open("colors.json"))
+        colors_dic = colors_list["colors"]
+        return colors_dic[name]
+    except:
+        colors_dic = {
+            "color0": "#9ab2c0",    # 0 panel background                        ->  white-gray
+            "color1": "#9ab2c0",    # 1 background for current screen tab       ->  Gray-white
+            "color2": "#30586f",    # 2 font color for group names              ->  Dark-Blue
+            "color3": "#ff2800",    # 3 border line color for current tab       ->  Orange
+            "color4": "#3c6e8a",    # 4 border line color for 'other tabs' and color for 'odd widgets'        ->  Dark-Blue
+            "color5": "#4f76c7"     # 5 window name                             ->  Light-Purple
+        }
+        return colors_dic[name]
 
-colors = [["#e3eaee", "#e3eaee"], # 0 panel background                        ->  white-gray
-          ["#9ab2c0", "#9ab2c0"], # 1 background for current screen tab       ->  Gray-white
-          ["#30586f", "#30586f"], # 2 font color for group names              ->  Dark-Blue
-          ["#ff2800", "#ff2800"], # 3 border line color for current tab       ->  Orange
-          ["#3c6e8a", "#3c6e8a"], # 4 border line color for 'other tabs' and color for 'odd widgets'        ->  Dark-Blue
-          ["#4f76c7", "#4f76c7"]] # 5 window name                             ->  Light-Purple
-
-##### DEFAULT WIDGET SETTINGS #####
+#### DEFAULT WIDGET SETTINGS #####
 widget_defaults = dict(
     font="Ubuntu Mono",
     fontsize = 12,
     padding = 2,
-    background=colors[2],
-    foreground=colors[0],
+    background = pywal_colors("color2"),
+    foreground = pywal_colors("color0"),
 )
-extension_defaults = widget_defaults.copy()
+
+# extension_defaults = widget_defaults.copy()
 
 screens = [
     Screen(
@@ -127,100 +138,98 @@ screens = [
             [
                 widget.Sep(
                     linewidth = 0,
-                    background = colors[2],
-                    foreground = colors[2],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color2"),
                     padding = 2,
                 ),
                 widget.CurrentLayoutIcon(
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 2,
                 ),
                 widget.CurrentLayout(
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 2,
                 ),
                 widget.TextBox(
                     text = '',
-                    background = colors[0],
-                    foreground = colors[2],
+                    background = pywal_colors("color0"),
+                    foreground = pywal_colors("color2"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.GroupBox(
-                    background = colors[0],
-                    foreground = colors[2],
+                    background = pywal_colors("color0"),
+                    foreground = pywal_colors("color2"),
                     padding = 2,
                     margin_y = 3,
                     margin_x = 3,
                     padding_y = 5,
                     padding_x = 3,
                     borderwith = 3,
-                    active = colors[3],
-                    inactive = colors[4],
-                    block_highlight_text_color = colors[2],
+                    active = pywal_colors("color3"),
+                    inactive = pywal_colors("color4"),
+                    block_highlight_text_color = pywal_colors("color2"),
                     center_aligned = True,
                     disable_drag = True,
                     hide_unused = True,
                     rounded = True,
                     highlight_method = "line",
-                    highlight_color = colors[0],
-                    this_current_screen_border = colors[5],
-                    this_current_border = colors[4],
-                    other_current_screen_border = colors[5],
-                    other_current_border = colors[4],
+                    highlight_color = pywal_colors("color0"),
+                    this_current_screen_border = pywal_colors("color5"),
+                    this_current_border = pywal_colors("color4"),
+                    other_current_screen_border = pywal_colors("color5"),
+                    other_current_border = pywal_colors("color4"),
                 ),
                 widget.TextBox(
                     text = '',
-                    background = colors[2],
-                    foreground = colors[0],
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.Prompt(
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 0,
                     ),
                 widget.TextBox(
                     text = '',
-                    background = colors[0],
-                    foreground = colors[2],
+                    background = pywal_colors("color0"),
+                    foreground = pywal_colors("color2"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.WindowName(
-                    background = colors[0],
-                    foreground = colors[2],
+                    background = pywal_colors("color0"),
+                    foreground = pywal_colors("color2"),
                     padding = 2,
                 ),
                 widget.TextBox(
                     text = '',
-                    background = colors[0],
-                    foreground = colors[2],
+                    background = pywal_colors("color0"),
+                    foreground = pywal_colors("color2"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.Net(
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 4,
                     interface = "enp39s0",
                 ),
                 widget.TextBox(
                     text = '',
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.CheckUpdates(
-                    background = colors[0],
-                    foreground = colors[2],
+                    background = pywal_colors("color0"),
+                    foreground = pywal_colors("color2"),
                     padding = 4,
-                    colour_have_updates = colors[3],
-                    colour_no_updates = colors[2],
+                    colour_have_updates = pywal_colors("color3"),
+                    colour_no_updates = pywal_colors("color2"),
                     display_format = 'Updates: {updates}',
                     no_update_string = 'No Updates',
                     restart_indicator = 'Restart Required',
@@ -230,71 +239,73 @@ screens = [
                 ),
                 widget.TextBox(
                     text = '',
-                    background = colors[0],
-                    foreground = colors[2],
+                    background = pywal_colors("color0"),
+                    foreground = pywal_colors("color2"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.Volume(
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 4,
                 ),
                 widget.TextBox(
                     text = '',
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.KeyboardLayout(
-                    background = colors[0],
-                    foreground = colors[2],
+                    background = pywal_colors("color0"),
+                    foreground = pywal_colors("color2"),
                     padding = 4,
                     configured_keyboards = ['us', 'ir'],
                 ),
                 widget.TextBox(
                     text = '',
-                    background = colors[0],
-                    foreground = colors[2],
+                    background = pywal_colors("color0"),
+                    foreground = pywal_colors("color2"),
                     padding = 0,
                     fontsize = 24,
                     ),
-                widget.KhalCalendar(
-                    background = colors[2],
-                    foreground = colors[0],
-                    reminder_color = colors[3],
-                    remindertime = 10,
-                    padding = 4,
-                    mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(terminal + "-e khal interactive")}
-                ),
+                # widget.KhalCalendar(
+                #     background = colors[2],
+                #     foreground = colors[0],
+                #     padding = 4,
+                #     reminder_color = colors[3],
+                #     remindertime = 10,
+                #     lookahead = 7,
+                #     update_interval = 60,
+                #     mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(terminal + 'khal --color interactive')}
+                # ),
                 widget.TextBox(
                     text = '',
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.Clock(format='%Y-%m-%d %a %I:%M %p',
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 4,
                 ),
                 widget.TextBox(
                     text = '',
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.Systray(
-                    background = colors[0],
+                    background = pywal_colors("color0"),
                     padding = 2,
                     icon_size = 14,
                     ),
                 widget.Sep(
-                    background = colors[0],
-                    foreground = colors[0],
+                    foreground = pywal_colors("color0"),
+                    background = pywal_colors("color0"),
                     padding = 2,
                 ),
             ],
@@ -304,86 +315,88 @@ screens = [
         bottom=bar.Bar(
             [
                 widget.Sep(
-                    background = colors[2],
-                    foreground = colors[2],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color2"),
                     padding = 2,
                 ),
-                widget.Wallpaper(
-                    background = colors[2],
-                    foreground = colors[0],
-                    padding = 4,
-                    label = 'Wallpaper',
-                    directory = '~/Pictures/gnome',
-                    random_selection = True,
-                ),
+                # widget.Wallpaper(
+                #     # background = colors[2],
+                #     # foreground = colors[0],
+                #     background = pywal_colors("color2"),
+                #     foreground = pywal_colors("color0"),
+                #     padding = 4,
+                #     label = 'Wallpaper',
+                #     directory = '~/Pictures/gnome',
+                #     random_selection = True,
+                # ),
                 widget.TextBox(
                     text = '',
-                    background = colors[0],
-                    foreground = colors[2],
+                    background = pywal_colors("color0"),
+                    foreground = pywal_colors("color2"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.CapsNumLockIndicator(
-                    background = colors[0],
-                    foreground = colors[2],
+                    background = pywal_colors("color0"),
+                    foreground = pywal_colors("color2"),
                     padding = 4,
                     update_interval = 1.0,
                 ),
                 widget.TextBox(
                     text = '',
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.TaskList(
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 4,
-                    border = colors[4],
-                    highlight_method = colors[3],
+                    border = pywal_colors("color4"),
+                    highlight_method = pywal_colors("color3"),
                     icon_size = 14,
                     rounded = True,
                     urgent_alert_method = 'text',   # text or border
-                    urgent_border = colors[4],
+                    urgent_border = pywal_colors("color4"),
                     ),
                 widget.TextBox(
                     text = '',
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.Memory(
-                    background = colors[0],
-                    foreground = colors[2],
+                    background = pywal_colors("color0"),
+                    foreground = pywal_colors("color2"),
                     padding = 4,
                     mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn("gnome-system-monitor")},# (terminal + ' -e top')},
                 ),
                 widget.TextBox(
                     text = '',
-                    background = colors[0],
-                    foreground = colors[2],
+                    background = pywal_colors("color0"),
+                    foreground = pywal_colors("color2"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.CPU(
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(terminal + ' -e top')},
                     padding = 4,
                     update_interval = 1.0,
                 ),
                 widget.TextBox(
                     text = '',
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.Clipboard(
-                    background = colors[2],
-                    foreground = colors[0],
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color0"),
                     padding = 2,
                 ),
             ],
@@ -393,8 +406,8 @@ screens = [
     Screen(top=bar.Bar(
         [
             widget.CPU(
-                background = colors[2],
-                foreground = colors[0],
+                background = pywal_colors("color2"),
+                foreground = pywal_colors("color0"),
                 mouse_callbacks = {terminal + "-e top"},
                 padding = 4,
                 update_interval = 1.0,
@@ -465,6 +478,10 @@ floating_layout = layout.Floating(float_rules=[
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 
+@hook.subscribe.startup
+def startup():
+    home = os.path.expanduser('~')
+    subprocess.call([home + '/.config/qtile/startup_rep.sh'])
 
 @hook.subscribe.startup_once
 def start_once():
