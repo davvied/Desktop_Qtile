@@ -12,58 +12,51 @@ from libqtile.lazy import lazy
 
 mod = "mod4"
 terminal = "alacritty"
+WebBrowser = "firefox"
 
+# Switch between windows
 keys = [
-    # Switch between windows
     Key([mod], "h", lazy.layout.left(), desc="Move focus to left"),
     Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
     Key([mod], "j", lazy.layout.down(), desc="Move focus down"),
     Key([mod], "k", lazy.layout.up(), desc="Move focus up"),
-    Key([mod], "Tab", lazy.layout.next(),
-        desc="Move window focus to other window"),
+    Key([mod], "Tab", lazy.layout.next(), desc="Move window focus to other window"),
 
-    # Move windows between left/right columns or move up/down in current stack.
-    # Moving out of range in Columns layout will create new column.
+# Move windows between left/right columns or move up/down in current stack.
     Key([mod, "shift"], "h", lazy.layout.shuffle_left(), desc="Move window to the left"),
     Key([mod, "shift"], "l", lazy.layout.shuffle_right(), desc="Move window to the right"),
     Key([mod, "shift"], "j", lazy.layout.shuffle_down(), desc="Move window down"),
     Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Move window up"),
+    Key([mod, "control"], "space", lazy.layout.flip(), desc="Change stack side"),
 
+# Change windows size
     Key([mod, "control"], "j", lazy.layout.shrink()),
     Key([mod, "control"], "k", lazy.layout.grow()),
     Key([mod, "control"], "n", lazy.layout.normalize()),
     Key([mod, "control"], "m", lazy.layout.maximize()),
-    Key([mod, "control"], "space", lazy.layout.flip()),
 
-    ### Switch focus to specific monitor (out of three)
+# Switch monitor focus
     Key([mod], "period", lazy.to_screen(0), desc='Keyboard focus to monitor 1'),
     Key([mod], "comma", lazy.to_screen(1), desc='Keyboard focus to monitor 2'),
     # Key([mod], "r", lazy.to_screen(2), desc='Keyboard focus to monitor 3'),
-
-    ### Switch focus of monitors
     Key([mod], "period", lazy.next_screen(), desc='Move focus to next monitor'),
     Key([mod], "comma", lazy.prev_screen(), desc='Move focus to prev monitor'),
 
-    # Toggle between different layouts as defined below
+# qtile controls
     Key([mod], "space", lazy.next_layout(), desc="Toggle between layouts"),
     Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
     Key([mod], "c", lazy.window.kill(), desc="Kill focused window"),
-
     Key([mod, "control"], "r", lazy.restart(), desc="Restart Qtile"),
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
-    Key([mod], "r", lazy.spawncmd(),
-        desc="Spawn a command using a prompt widget"),
-    # Media keys
+    Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a prompt widget"),
+
+# Media keys
     Key([], "XF86AudioRaiseVolume", lazy.spawn("amixer set Master 2%+ -q"), desc="Rise Volume"),
     Key([], "XF86AudioLowerVolume", lazy.spawn("amixer set Master 2%- -q"), desc="Lower Volume"),
     Key([], "XF86AudioMute", lazy.spawn("amixer set Master toggle -q"), desc="Lower Volume"),
-
     Key(["control", "shift"], "Escape", lazy.spawn("gnome-system-monitor")),
-]
 
-prompt = "{0}@{1}: ".format(os.environ["USER"], socket.gethostname())
-
-groups = [Group(i) for i in "123456789"]
+groups = [Group(i) for i in "123456789"],
 
 for i in groups:
     keys.extend([
@@ -112,28 +105,54 @@ def pywal_colors(name):
         return colors_dic[name]
     except:
         colors_dic = {
-            "color0": "#9ab2c0",    # 0 panel background                        ->  white-gray
-            "color1": "#9ab2c0",    # 1 background for current screen tab       ->  Gray-white
-            "color2": "#30586f",    # 2 font color for group names              ->  Dark-Blue
-            "color3": "#ff2800",    # 3 border line color for current tab       ->  Orange
-            "color4": "#3c6e8a",    # 4 border line color for 'other tabs' and color for 'odd widgets'        ->  Dark-Blue
-            "color5": "#4f76c7"     # 5 window name                             ->  Light-Purple
+            "color0": "#30586f",    # 0 background for current screen tab       ->  Gray-white
+            "color2": "#9ab2c0",    # 2 panel foreground                        ->  white-gray
+            "color4": "#4f76c7",    # 4 window name                             ->  Light-Purple
+            "color5": "#3c6e8a",    # 5 border line color for 'other tabs' and color for 'odd widgets'        ->  Dark-Blue
+            "color6": "#9ab2c0",    # 6 font color for group names              ->  Dark-Blue
+            "color7": "#ff2800",    # 7 border line color for current tab       ->  Orange
         }
         return colors_dic[name]
 
-#### DEFAULT WIDGET SETTINGS #####
+# def window_to_prev_group(qtile):
+#     if qtile.currentWindow is not None:
+#         i = qtile.groups.index(qtile.currentGroup)
+#         qtile.currentWindow.togroup(qtile.groups[i - 1].name)
+
+# def window_to_next_group(qtile):
+#     if qtile.currentWindow is not None:
+#         i = qtile.groups.index(qtile.currentGroup)
+#         qtile.currentWindow.togroup(qtile.groups[i + 1].name)
+
+# def window_to_previous_screen(qtile):
+#     i = qtile.screens.index(qtile.current_screen)
+#     if i != 0:
+#         group = qtile.screens[i - 1].group.name
+#         qtile.current_window.togroup(group)
+
+# def window_to_next_screen(qtile):
+#     i = qtile.screens.index(qtile.current_screen)
+#     if i + 1 != len(qtile.screens):
+#         group = qtile.screens[i + 1].group.name
+#         qtile.current_window.togroup(group)
+
+# def switch_screens(qtile):
+#     i = qtile.screens.index(qtile.current_screen)
+#     group = qtile.screens[i - 1].group
+#     qtile.current_screen.set_group(group)
+
 widget_defaults = dict(
     font="Ubuntu Mono",
     fontsize = 12,
     padding = 2,
-    background = pywal_colors("color2"),
+    background = pywal_colors("color1"),
     foreground = pywal_colors("color0"),
 )
 
-# extension_defaults = widget_defaults.copy()
-
 screens = [
+
     Screen(
+
         top=bar.Bar(
             [
                 widget.Sep(
@@ -154,13 +173,13 @@ screens = [
                 ),
                 widget.TextBox(
                     text = '',
-                    background = pywal_colors("color0"),
+                    background = pywal_colors("color6"),
                     foreground = pywal_colors("color2"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.GroupBox(
-                    background = pywal_colors("color0"),
+                    background = pywal_colors("color6"),
                     foreground = pywal_colors("color2"),
                     padding = 2,
                     margin_y = 3,
@@ -168,45 +187,47 @@ screens = [
                     padding_y = 5,
                     padding_x = 3,
                     borderwith = 3,
-                    active = pywal_colors("color3"),
-                    inactive = pywal_colors("color4"),
-                    block_highlight_text_color = pywal_colors("color2"),
+                    active = pywal_colors("color7"),
+                    inactive = pywal_colors("color1"),
+                    block_highlight_text_color = pywal_colors("color0"),
                     center_aligned = True,
                     disable_drag = True,
                     hide_unused = True,
                     rounded = True,
                     highlight_method = "line",
-                    highlight_color = pywal_colors("color0"),
-                    this_current_screen_border = pywal_colors("color5"),
-                    this_current_border = pywal_colors("color4"),
+                    highlight_color = pywal_colors("color5"),
+                    this_current_screen_border = pywal_colors("color7"),
+                    this_current_border = pywal_colors("color6"),
                     other_current_screen_border = pywal_colors("color5"),
                     other_current_border = pywal_colors("color4"),
                 ),
                 widget.TextBox(
                     text = '',
+                    background = pywal_colors("color2"),
+                    foreground = pywal_colors("color6"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.Prompt(
-                    background = pywal_colors("color2"),
+                    background = pywal_colors("color6"),
                     foreground = pywal_colors("color0"),
                     padding = 0,
                     ),
                 widget.TextBox(
                     text = '',
-                    background = pywal_colors("color0"),
+                    background = pywal_colors("color6"),
                     foreground = pywal_colors("color2"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.WindowName(
-                    background = pywal_colors("color0"),
-                    foreground = pywal_colors("color2"),
+                    background = pywal_colors("color6"),
+                    foreground = pywal_colors("color0"),
                     padding = 2,
                 ),
                 widget.TextBox(
                     text = '',
-                    background = pywal_colors("color0"),
+                    background = pywal_colors("color6"),
                     foreground = pywal_colors("color2"),
                     padding = 0,
                     fontsize = 24,
@@ -220,16 +241,16 @@ screens = [
                 widget.TextBox(
                     text = '',
                     background = pywal_colors("color2"),
-                    foreground = pywal_colors("color0"),
+                    foreground = pywal_colors("color6"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.CheckUpdates(
-                    background = pywal_colors("color0"),
-                    foreground = pywal_colors("color2"),
+                    background = pywal_colors("color6"),
+                    foreground = pywal_colors("color0"),
                     padding = 4,
-                    colour_have_updates = pywal_colors("color3"),
-                    colour_no_updates = pywal_colors("color2"),
+                    colour_have_updates = pywal_colors("color7"),
+                    colour_no_updates = pywal_colors("color1"),
                     display_format = 'Updates: {updates}',
                     no_update_string = 'No Updates',
                     restart_indicator = 'Restart Required',
@@ -239,7 +260,7 @@ screens = [
                 ),
                 widget.TextBox(
                     text = '',
-                    background = pywal_colors("color0"),
+                    background = pywal_colors("color6"),
                     foreground = pywal_colors("color2"),
                     padding = 0,
                     fontsize = 24,
@@ -252,19 +273,19 @@ screens = [
                 widget.TextBox(
                     text = '',
                     background = pywal_colors("color2"),
-                    foreground = pywal_colors("color0"),
+                    foreground = pywal_colors("color6"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.KeyboardLayout(
-                    background = pywal_colors("color0"),
-                    foreground = pywal_colors("color2"),
+                    background = pywal_colors("color6"),
+                    foreground = pywal_colors("color0"),
                     padding = 4,
                     configured_keyboards = ['us', 'ir'],
                 ),
                 widget.TextBox(
                     text = '',
-                    background = pywal_colors("color0"),
+                    background = pywal_colors("color6"),
                     foreground = pywal_colors("color2"),
                     padding = 0,
                     fontsize = 24,
@@ -279,13 +300,13 @@ screens = [
                 #     update_interval = 60,
                 #     mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn(terminal + 'khal --color interactive')}
                 # ),
-                widget.TextBox(
-                    text = '',
-                    background = pywal_colors("color2"),
-                    foreground = pywal_colors("color0"),
-                    padding = 0,
-                    fontsize = 24,
-                    ),
+                # widget.TextBox(
+                #     text = '',
+                #     background = pywal_colors("color6"),
+                #     foreground = pywal_colors("color1"),
+                #     padding = 0,
+                #     fontsize = 24,
+                #     ),
                 widget.Clock(format='%Y-%m-%d %a %I:%M %p',
                     background = pywal_colors("color2"),
                     foreground = pywal_colors("color0"),
@@ -294,24 +315,25 @@ screens = [
                 widget.TextBox(
                     text = '',
                     background = pywal_colors("color2"),
-                    foreground = pywal_colors("color0"),
+                    foreground = pywal_colors("color6"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.Systray(
-                    background = pywal_colors("color0"),
+                    background = pywal_colors("color6"),
                     padding = 2,
                     icon_size = 14,
                     ),
                 widget.Sep(
-                    foreground = pywal_colors("color0"),
-                    background = pywal_colors("color0"),
+                    foreground = pywal_colors("color6"),
+                    background = pywal_colors("color6"),
                     padding = 2,
                 ),
             ],
             opacity = 1.0,
             size = 24,
         ),
+
         bottom=bar.Bar(
             [
                 widget.Sep(
@@ -322,8 +344,8 @@ screens = [
                 # widget.Wallpaper(
                 #     # background = colors[2],
                 #     # foreground = colors[0],
-                #     background = pywal_colors("color2"),
-                #     foreground = pywal_colors("color0"),
+                #     background = pywal_colors("color1"),
+                #     foreground = pywal_colors("color3"),
                 #     padding = 4,
                 #     label = 'Wallpaper',
                 #     directory = '~/Pictures/gnome',
@@ -331,21 +353,21 @@ screens = [
                 # ),
                 widget.TextBox(
                     text = '',
-                    background = pywal_colors("color0"),
+                    background = pywal_colors("color6"),
                     foreground = pywal_colors("color2"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.CapsNumLockIndicator(
-                    background = pywal_colors("color0"),
-                    foreground = pywal_colors("color2"),
+                    background = pywal_colors("color6"),
+                    foreground = pywal_colors("color0"),
                     padding = 4,
                     update_interval = 1.0,
                 ),
                 widget.TextBox(
                     text = '',
                     background = pywal_colors("color2"),
-                    foreground = pywal_colors("color0"),
+                    foreground = pywal_colors("color6"),
                     padding = 0,
                     fontsize = 24,
                     ),
@@ -353,29 +375,29 @@ screens = [
                     background = pywal_colors("color2"),
                     foreground = pywal_colors("color0"),
                     padding = 4,
-                    border = pywal_colors("color4"),
+                    border = pywal_colors("color5"),
                     highlight_method = pywal_colors("color3"),
                     icon_size = 14,
                     rounded = True,
                     urgent_alert_method = 'text',   # text or border
-                    urgent_border = pywal_colors("color4"),
+                    urgent_border = pywal_colors("color7"),
                     ),
                 widget.TextBox(
                     text = '',
                     background = pywal_colors("color2"),
-                    foreground = pywal_colors("color0"),
+                    foreground = pywal_colors("color6"),
                     padding = 0,
                     fontsize = 24,
                     ),
                 widget.Memory(
-                    background = pywal_colors("color0"),
-                    foreground = pywal_colors("color2"),
+                    background = pywal_colors("color6"),
+                    foreground = pywal_colors("color0"),
                     padding = 4,
                     mouse_callbacks = {'Button1': lambda: qtile.cmd_spawn("gnome-system-monitor")},# (terminal + ' -e top')},
                 ),
                 widget.TextBox(
                     text = '',
-                    background = pywal_colors("color0"),
+                    background = pywal_colors("color6"),
                     foreground = pywal_colors("color2"),
                     padding = 0,
                     fontsize = 24,
@@ -390,7 +412,7 @@ screens = [
                 widget.TextBox(
                     text = '',
                     background = pywal_colors("color2"),
-                    foreground = pywal_colors("color0"),
+                    foreground = pywal_colors("color6"),
                     padding = 0,
                     fontsize = 24,
                     ),
@@ -403,51 +425,24 @@ screens = [
             size=24,
         )
     ),
-    Screen(top=bar.Bar(
-        [
-            widget.CPU(
-                background = pywal_colors("color2"),
+
+    Screen(
+
+        top=bar.Bar(
+            [
+                widget.CPU(
+                background = pywal_colors("color1"),
                 foreground = pywal_colors("color0"),
                 mouse_callbacks = {terminal + "-e top"},
                 padding = 4,
                 update_interval = 1.0,
+                ),
+            ],
+            size = 24,
             ),
-
-        ],
-        size = 24,
-        ),
         ),
 ]
 
-# Extra functions from DT's config
-def window_to_prev_group(qtile):
-    if qtile.currentWindow is not None:
-        i = qtile.groups.index(qtile.currentGroup)
-        qtile.currentWindow.togroup(qtile.groups[i - 1].name)
-
-def window_to_next_group(qtile):
-    if qtile.currentWindow is not None:
-        i = qtile.groups.index(qtile.currentGroup)
-        qtile.currentWindow.togroup(qtile.groups[i + 1].name)
-
-def window_to_previous_screen(qtile):
-    i = qtile.screens.index(qtile.current_screen)
-    if i != 0:
-        group = qtile.screens[i - 1].group.name
-        qtile.current_window.togroup(group)
-
-def window_to_next_screen(qtile):
-    i = qtile.screens.index(qtile.current_screen)
-    if i + 1 != len(qtile.screens):
-        group = qtile.screens[i + 1].group.name
-        qtile.current_window.togroup(group)
-
-def switch_screens(qtile):
-    i = qtile.screens.index(qtile.current_screen)
-    group = qtile.screens[i - 1].group
-    qtile.current_screen.set_group(group)
-
-# Drag floating layouts.
 mouse = [
     Drag([mod], "Button1", lazy.window.set_position_floating(),
          start=lazy.window.get_position()),
@@ -478,15 +473,26 @@ floating_layout = layout.Floating(float_rules=[
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 
-@hook.subscribe.startup
-def startup():
+@hook.subscribe.restart
+def restart():
     home = os.path.expanduser('~')
-    subprocess.call([home + '/.config/qtile/startup_rep.sh'])
+    try:
+        subprocess.call([home + '/.config/qtile/startup_rep.sh'])
+    except:
+        None
+
+# @hook.subscribe.startup
+# def startup():
+#     home = os.path.expanduser('~')
+#     subprocess.call([home + '/.config/qtile/startup_rep.sh'])
 
 @hook.subscribe.startup_once
 def start_once():
     home = os.path.expanduser('~')
-    subprocess.call([home + '/.config/qtile/autostart.sh'])
+    try:
+        subprocess.call([home + '/.config/qtile/autostart.sh'])
+    except:
+        None
 
 # XXX: Gasp! We're lying here. In fact, nobody really uses or cares about this
 # string besides java UI toolkits; you can see several discussions on the
@@ -497,3 +503,5 @@ def start_once():
 # We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
 # java that happens to be on java's whitelist.
 wmname = "LG3D"
+
+prompt = "{0}@{1}: ".format(os.environ["USER"], socket.gethostname())
