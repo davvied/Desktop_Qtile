@@ -43,20 +43,40 @@ keys = [
     Key([mod], "comma", lazy.prev_screen(), desc='Move focus to prev monitor'),
 
 # qtile controls
-    Key([mod], "space", lazy.next_layout(), desc="Toggle between layouts"),
-    Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
-    Key([mod], "c", lazy.window.kill(), desc="Kill focused window"),
-    Key([mod, "control"], "r", lazy.restart(), desc="Restart Qtile"),
-    Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
-    Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a prompt widget"),
+    Key([mod],"space",
+        lazy.next_layout(),
+        desc="Toggle between layouts"),
+    Key([mod], "q",
+        lazy.window.kill(),
+        desc="Kill focused window"),
+    Key([mod], "c",
+        lazy.window.kill(),
+        desc="Kill focused window"),
+    Key([mod, "control"], "r",
+        lazy.restart(),
+        desc="Restart Qtile"),
+    Key([mod, "control"], "q",
+        lazy.shutdown(),
+        desc="Shutdown Qtile"),
+    Key([mod], "r",
+        lazy.spawncmd(),
+        desc="Spawn a command using a prompt widget"),
+    Key(["control", "shift"], "Escape",
+        lazy.spawn("gnome-system-monitor")),
 
-# Media keys
-    Key([], "XF86AudioRaiseVolume", lazy.spawn("amixer set Master 2%+ -q"), desc="Rise Volume"),
-    Key([], "XF86AudioLowerVolume", lazy.spawn("amixer set Master 2%- -q"), desc="Lower Volume"),
-    Key([], "XF86AudioMute", lazy.spawn("amixer set Master toggle -q"), desc="Lower Volume"),
-    Key(["control", "shift"], "Escape", lazy.spawn("gnome-system-monitor")),
+    Key([], "XF86AudioRaiseVolume",
+        lazy.spawn("amixer set Master 2%+ -q"),
+        desc="Rise Volume"),
+    Key([], "XF86AudioLowerVolume",
+        lazy.spawn("amixer set Master 2%- -q"),
+        desc="Lower Volume"),
+    Key([], "XF86AudioMute",
+        lazy.spawn("amixer set Master toggle -q"),
+        desc="Lower Volume"),
 
-groups = [Group(i) for i in "123456789"],
+       ]
+
+groups = [Group(i) for i in "123456789"]
 
 for i in groups:
     keys.extend([
@@ -71,7 +91,7 @@ for i in groups:
         # # mod1 + shift + letter of group = move focused window to group
         # Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
         #     desc="move focused window to group {}".format(i.name)),
-    ])
+        ])
 
 layout_theme = {"border_width": 2,
                 "margin": 8,
@@ -94,7 +114,7 @@ layouts = [
     # layout.VerticalTile(),
     # layout.Zoomy(),
     layout.Floating(**layout_theme)
-]
+    ]
 
 def pywal_colors(name):
     home = os.path.expanduser('~')
@@ -147,7 +167,7 @@ widget_defaults = dict(
     padding = 2,
     background = pywal_colors("color1"),
     foreground = pywal_colors("color0"),
-)
+    )
 
 screens = [
 
@@ -441,7 +461,7 @@ screens = [
             size = 24,
             ),
         ),
-]
+    ]
 
 mouse = [
     Drag([mod], "Button1", lazy.window.set_position_floating(),
@@ -449,7 +469,7 @@ mouse = [
     Drag([mod], "Button3", lazy.window.set_size_floating(),
          start=lazy.window.get_size()),
     Click([mod], "Button2", lazy.window.bring_to_front())
-]
+    ]
 
 dgroups_key_binder = None
 dgroups_app_rules = []  # type: List
@@ -469,7 +489,7 @@ floating_layout = layout.Floating(float_rules=[
     Match(wm_class='pinentry-gtk-2'),  # Steam
     Match(title='branchdialog'),  # gitk
     Match(title='pinentry'),  # GPG key password entry
-])
+    ])
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 

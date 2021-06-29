@@ -17,7 +17,7 @@
 
 * Qtile Congig
 This is qtile config for my desktop computer
-The theming is bassed on DT's(Distrotube) config file with my modifications to integrated pywal to it.
+The theming is based on DT's(DistroTube) config file with my modifications to integrated pywal to it.
 when qtile is restarted the wallpaper will change and theme colors will change with it.
 
 ** Imports
@@ -90,23 +90,44 @@ keys = [
 *** qtile controls
 #+begin_src python
 # qtile controls
-    Key([mod], "space", lazy.next_layout(), desc="Toggle between layouts"),
-    Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
-    Key([mod], "c", lazy.window.kill(), desc="Kill focused window"),
-    Key([mod, "control"], "r", lazy.restart(), desc="Restart Qtile"),
-    Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
-    Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a prompt widget"),
+    Key([mod],"space",
+        lazy.next_layout(),
+        desc="Toggle between layouts"),
+    Key([mod], "q",
+        lazy.window.kill(),
+        desc="Kill focused window"),
+    Key([mod], "c",
+        lazy.window.kill(),
+        desc="Kill focused window"),
+    Key([mod, "control"], "r",
+        lazy.restart(),
+        desc="Restart Qtile"),
+    Key([mod, "control"], "q",
+        lazy.shutdown(),
+        desc="Shutdown Qtile"),
+    Key([mod], "r",
+        lazy.spawncmd(),
+        desc="Spawn a command using a prompt widget"),
+    Key(["control", "shift"], "Escape",
+        lazy.spawn("gnome-system-monitor")),
 #+end_src
 
 *** Media keys
 #+begin_src python
-# Media keys
-    Key([], "XF86AudioRaiseVolume", lazy.spawn("amixer set Master 2%+ -q"), desc="Rise Volume"),
-    Key([], "XF86AudioLowerVolume", lazy.spawn("amixer set Master 2%- -q"), desc="Lower Volume"),
-    Key([], "XF86AudioMute", lazy.spawn("amixer set Master toggle -q"), desc="Lower Volume"),
-    Key(["control", "shift"], "Escape", lazy.spawn("gnome-system-monitor")),
+    Key([], "XF86AudioRaiseVolume",
+        lazy.spawn("amixer set Master 2%+ -q"),
+        desc="Rise Volume"),
+    Key([], "XF86AudioLowerVolume",
+        lazy.spawn("amixer set Master 2%- -q"),
+        desc="Lower Volume"),
+    Key([], "XF86AudioMute",
+        lazy.spawn("amixer set Master toggle -q"),
+        desc="Lower Volume"),
 #+end_src
-]
+
+#+begin_src python
+       ]
+#+end_src
 
 ** Run prompt
 #+begin_src pythom
@@ -115,7 +136,7 @@ prompt = "{0}@{1}: ".format(os.environ["USER"], socket.gethostname())
 
 ** Groups
 #+begin_src python
-groups = [Group(i) for i in "123456789"],
+groups = [Group(i) for i in "123456789"]
 
 for i in groups:
     keys.extend([
@@ -130,7 +151,7 @@ for i in groups:
         # # mod1 + shift + letter of group = move focused window to group
         # Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
         #     desc="move focused window to group {}".format(i.name)),
-    ])
+        ])
 #+end_src
 
 ** Global layout theme
@@ -159,7 +180,7 @@ layouts = [
     # layout.VerticalTile(),
     # layout.Zoomy(),
     layout.Floating(**layout_theme)
-]
+    ]
 #+end_src
 
 ** modules
@@ -175,14 +196,16 @@ def pywal_colors(name):
         colors_dic = colors_list["colors"]
         return colors_dic[name]
     except:
-        colors_dic = {
+        col ors_dic = {
             "color0": "#30586f",    # 0 background for current screen tab       ->  Gray-white
+            "color1": "#30586f",    # 0 background for current screen tab       ->  Gray-white
             "color2": "#9ab2c0",    # 2 panel foreground                        ->  white-gray
+            "color3": "#9ab2c0",    # 2 panel foreground                        ->  white-gray
             "color4": "#4f76c7",    # 4 window name                             ->  Light-Purple
             "color5": "#3c6e8a",    # 5 border line color for 'other tabs' and color for 'odd widgets'        ->  Dark-Blue
             "color6": "#9ab2c0",    # 6 font color for group names              ->  Dark-Blue
             "color7": "#ff2800",    # 7 border line color for current tab       ->  Orange
-        }
+            }
         return colors_dic[name]
 #+end_src
 
@@ -225,7 +248,7 @@ widget_defaults = dict(
     padding = 2,
     background = pywal_colors("color1"),
     foreground = pywal_colors("color0"),
-)
+    )
 #+end_src
 
 ** Screens config and widget
@@ -534,7 +557,7 @@ screens = [
             size = 24,
             ),
         ),
-]
+    ]
 #+end_src
 
 ** Mouse config for Drag and resize floating layouts.
@@ -545,7 +568,7 @@ mouse = [
     Drag([mod], "Button3", lazy.window.set_size_floating(),
          start=lazy.window.get_size()),
     Click([mod], "Button2", lazy.window.bring_to_front())
-]
+    ]
 
 dgroups_key_binder = None
 dgroups_app_rules = []  # type: List
@@ -555,7 +578,7 @@ bring_front_click = False
 cursor_warp = False
 floating_layout = layout.Floating(float_rules=[
     # Run the utility of `xprop` to see the wm class and name of an X client.
-    *layout.Floating.default_float_rules,
+    ,*layout.Floating.default_float_rules,
     Match(wm_class='confirmreset'),  # gitk
     Match(wm_class='makebranch'),  # gitk
     Match(wm_class='maketag'),  # gitk
@@ -565,7 +588,7 @@ floating_layout = layout.Floating(float_rules=[
     Match(wm_class='pinentry-gtk-2'),  # Steam
     Match(title='branchdialog'),  # gitk
     Match(title='pinentry'),  # GPG key password entry
-])
+    ])
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 #+end_src
