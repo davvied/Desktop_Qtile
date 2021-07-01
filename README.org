@@ -196,16 +196,16 @@ def pywal_colors(name):
         colors_dic = colors_list["colors"]
         return colors_dic[name]
     except:
-        col ors_dic = {
-            "color0": "#30586f",    # 0 background for current screen tab       ->  Gray-white
-            "color1": "#30586f",    # 0 background for current screen tab       ->  Gray-white
-            "color2": "#9ab2c0",    # 2 panel foreground                        ->  white-gray
-            "color3": "#9ab2c0",    # 2 panel foreground                        ->  white-gray
+        colors_dic = {
+            "color0": "#9ab2c0",    # 0 background for current screen tab       ->  Gray-white
+            "color1": "#30586f",    # 1 panel foreground                        ->  Dark-Blue
+            "color2": "#30586f",    # 2                                         ->  white-gray
+            "color3": "#9ab2c0",    # 2                                         ->  Gray-white
             "color4": "#4f76c7",    # 4 window name                             ->  Light-Purple
             "color5": "#3c6e8a",    # 5 border line color for 'other tabs' and color for 'odd widgets'        ->  Dark-Blue
-            "color6": "#9ab2c0",    # 6 font color for group names              ->  Dark-Blue
-            "color7": "#ff2800",    # 7 border line color for current tab       ->  Orange
-            }
+            "color6": "#9ab2c0",    # 6 font color for group names              ->  Gray-white
+            "color7": "#ff2800",    # 7 border line color for current tab       ->  Red Orange
+        }
         return colors_dic[name]
 #+end_src
 
